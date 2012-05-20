@@ -44,7 +44,7 @@ public class MainActivity extends Activity {
         });
 
         ListView list = (ListView) findViewById(R.id.list);
-        WineListAdapter wineList = new WineListAdapter(this);
+        WineListAdapter wineList = new WineListAdapter(this, getDataDirectory());
         list.setAdapter(wineList);
     }
 
