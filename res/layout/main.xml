@@ -4,15 +4,17 @@
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
         >
-    <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="Hello World, MyActivity"
-            />
+
+    <ListView android:id="@+id/list"
+              android:layout_height="0dip"
+              android:height="0dp"
+              android:layout_weight="1"
+              android:layout_width="fill_parent"/>
 
     <Button android:id="@+id/photoButton"
             android:layout_width="fill_parent" android:layout_height="50dp"
-            android:text="Take photo"
+            android:text="@string/photoButtonText"
             />
+
 </LinearLayout>
 
