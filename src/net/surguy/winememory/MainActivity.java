@@ -22,6 +22,9 @@ public class MainActivity extends Activity {
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
     private static final String LOG_TAG = "MainActivity";
 
+    ListView list;
+    WineListAdapter wineList;
+
     /**
      * Called when the activity is first created.
      */
@@ -43,8 +46,8 @@ public class MainActivity extends Activity {
             }
         });
 
-        ListView list = (ListView) findViewById(R.id.list);
-        WineListAdapter wineList = new WineListAdapter(this, getDataDirectory());
+        list = (ListView) findViewById(R.id.list);
+        wineList = new WineListAdapter(this, getDataDirectory());
         list.setAdapter(wineList);
     }
 
@@ -74,14 +77,11 @@ public class MainActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                // Called back with data == null
-                // Toast.makeText(this, "Image successfully saved to " + data.getData(), Toast.LENGTH_LONG).show();
-//                Log.d(LOG_TAG, "Called back on");
-//                for (File file : getDataDirectory().listFiles()) {
-//                    Log.d(LOG_TAG, "File is " + file.getName());
-//                }
+                // Doesn't work
+                list.refreshDrawableState();
+                // Does work
+                wineList.notifyDataSetChanged();
 
-                // @todo Show metadata capture activity
             } else if (resultCode == RESULT_CANCELED) {
                 Log.d(LOG_TAG, "Capture cancelled");
             } else {
