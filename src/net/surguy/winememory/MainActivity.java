@@ -13,6 +13,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -56,19 +57,19 @@ public class MainActivity extends Activity {
     }
 
     Uri getNewFileUri() {
-//        try {
+        try {
             String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
             File mediaFile = new File(getDataDirectory(), timeStamp + ".jpg");
             // Creating the file is recommended by http://stackoverflow.com/questions/1910608/android-action-image-capture-intent
-//            if (!mediaFile.exists()) {
-//                mediaFile.createNewFile();
-//                Log.d(LOG_TAG, "Created output file " + mediaFile);
-//            }
+            if (!mediaFile.exists()) {
+                mediaFile.createNewFile();
+                Log.d(LOG_TAG, "Created output file " + mediaFile);
+            }
             return Uri.fromFile(mediaFile);
-//        } catch (IOException e) {
-//            Log.w(LOG_TAG, "Could not create output file");
-//            return null;
-//        }
+        } catch (IOException e) {
+            Log.w(LOG_TAG, "Could not create output file");
+            return null;
+        }
     }
 
     private File getDataDirectory() {
