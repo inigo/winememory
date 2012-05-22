@@ -6,10 +6,7 @@ import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -50,11 +47,12 @@ public class WineListAdapter extends BaseAdapter {
 
         View view = inflater.inflate(R.layout.wine_list, null);
         TextView textLine = (TextView) view.findViewById(R.id.description);
-        TextView titleLine = (TextView) view.findViewById(R.id.title);
+//        TextView titleLine = (TextView) view.findViewById(R.id.title);
         ImageView iconLine = (ImageView) view.findViewById(R.id.icon);
+        RatingBar ratingBar = (RatingBar) view.findViewById(R.id.rating);
 
         final File file = directory.listFiles()[position];
-        titleLine.setText("Some text");
+//        titleLine.setText("Some text");
         textLine.setText("Item " + file.getName());
         iconLine.setAdjustViewBounds(true);
         iconLine.setImageBitmap(bitmapFromFile(file));
@@ -68,7 +66,7 @@ public class WineListAdapter extends BaseAdapter {
             }
         });
 
-        Line holder = new Line(textLine, iconLine, file);
+        Line holder = new Line(textLine, iconLine, ratingBar, file);
         view.setTag(holder);
         return view;
     }
@@ -89,11 +87,13 @@ public class WineListAdapter extends BaseAdapter {
     private static class Line {
         final TextView textLine;
         final ImageView iconLine;
+        final RatingBar ratingBar;
         final File file;
 
-        private Line(TextView textLine, ImageView iconLine, File file) {
+        private Line(TextView textLine, ImageView iconLine, RatingBar ratingBar, File file) {
             this.textLine = textLine;
             this.iconLine = iconLine;
+            this.ratingBar = ratingBar;
             this.file = file;
         }
     }
