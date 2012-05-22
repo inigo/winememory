@@ -22,7 +22,7 @@
     <RatingBar
             android:id="@+id/rating"
             style="?android:attr/ratingBarStyleSmall"
-            android:isIndicator="false"
+            android:isIndicator="true"
             android:layout_width="80dip"
             android:layout_height="26dip"
             android:numStars="5"

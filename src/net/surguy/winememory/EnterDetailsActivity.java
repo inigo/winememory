@@ -34,10 +34,10 @@ public class EnterDetailsActivity extends Activity {
         final Activity context = this;
 
         Intent intent = getIntent();
-        Uri photoUri = (Uri) intent.getExtras().get("PHOTO_URI");
+        final Uri photoUri = (Uri) intent.getExtras().get("PHOTO_URI");
         Log.d(LOG_TAG, "Received URI " + photoUri);
 
-        File file = new File(photoUri.getPath());
+        final File file = new File(photoUri.getPath());
         ImageView imageView = (ImageView) findViewById(R.id.form_icon);
         imageView.setAdjustViewBounds(true);
         imageView.setImageBitmap(bitmapFromFile(file));
@@ -51,6 +51,15 @@ public class EnterDetailsActivity extends Activity {
                 String title = ((EditText) findViewById(R.id.form_name)).getText().toString();
                 String description = ((EditText) findViewById(R.id.form_description)).getText().toString();
                 float rating = ((RatingBar) findViewById(R.id.form_rating)).getRating();
+
+                final Bottle newBottle = new Bottle(title, description, rating, photoUri.getPath());
+                final DatabaseHandler db = new DatabaseHandler(context);
+
+//                runOnUiThread(new Runnable() {
+//                    public void run() {
+                        db.addBottle(newBottle);
+//                    }
+//                });
 
                 context.finish();
             }

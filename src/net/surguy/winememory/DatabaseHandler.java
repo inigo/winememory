@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,7 @@ public class DatabaseHandler extends SQLiteOpenHelper  {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        Log.i("DatabaseHandler", "Creating database");
         String createBottleTable = "CREATE TABLE " + TABLE_BOTTLE + "("
                 + KEY_ID + " INTEGER PRIMARY KEY"
                 + " , " + KEY_NAME + " TEXT"
@@ -72,7 +74,7 @@ public class DatabaseHandler extends SQLiteOpenHelper  {
     public List<Bottle> getAllBottles() {
         List<Bottle> bottleList = new ArrayList<Bottle>();
 
-        SQLiteDatabase db = this.getReadableDatabase();
+        SQLiteDatabase db = this.getWritableDatabase();
         try {
             Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_BOTTLE, null);
 
@@ -91,7 +93,7 @@ public class DatabaseHandler extends SQLiteOpenHelper  {
         } finally {
             db.close();
         }
-
+        Log.i("DatabaseHandler", "Getting all bottles - there are " + bottleList.size());
         return bottleList;
     }
 

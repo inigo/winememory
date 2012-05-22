@@ -25,7 +25,6 @@ public class MainActivity extends Activity {
     WineListAdapter wineList;
 
     Uri fileUri = null;
-    DatabaseHandler db;
 
 
     /**
@@ -36,7 +35,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        db = new DatabaseHandler(this);
+        Log.i(LOG_TAG, "Created MainActivity");
 
         Button photoButton = (Button) findViewById(R.id.photoButton);
 
@@ -52,7 +51,7 @@ public class MainActivity extends Activity {
         });
 
         list = (ListView) findViewById(R.id.list);
-        wineList = new WineListAdapter(this, getDataDirectory());
+        wineList = new WineListAdapter(this);
         list.setAdapter(wineList);
     }
 
@@ -89,10 +88,29 @@ public class MainActivity extends Activity {
                 intent.putExtra("PHOTO_URI", fileUri);
                 startActivity(intent);
 
-                // Doesn't work
-//                list.refreshDrawableState();
-                // Does work
+                Log.i(LOG_TAG, "Activity has completed and returned control");
+
+                // @todo SimpleCursorAdapter???
+//                Doesn't work
+                list.refreshDrawableState();
+                list.invalidateViews();
+                list.requestLayout();
+
+                // @todo What thread am I on currently?
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        Log.i(LOG_TAG, "Updating things on UI thread");
+                        list.refreshDrawableState();
+                        list.invalidateViews();
+                        wineList.notifyDataSetChanged();
+                    }
+                });
+
+                Log.i(LOG_TAG, "Notifying on current thread");
                 wineList.notifyDataSetChanged();
+
+                // @todo Massively hacky! Kills and recreates the activity
+                this.recreate();
 
             } else if (resultCode == RESULT_CANCELED) {
                 Log.d(LOG_TAG, "Capture cancelled");
