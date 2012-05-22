@@ -24,6 +24,8 @@ public class MainActivity extends Activity {
     ListView list;
     WineListAdapter wineList;
 
+    Uri fileUri = null;
+
     /**
      * Called when the activity is first created.
      */
@@ -39,7 +41,7 @@ public class MainActivity extends Activity {
         photoButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                Uri fileUri = getNewFileUri();
+                fileUri = getNewFileUri();
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
                 startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
             }
@@ -76,8 +78,15 @@ public class MainActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
+                Log.d(LOG_TAG, "Intent is " + data);
+//                Log.d(LOG_TAG, "Extra URI is " + data.getExtras().get(MediaStore.EXTRA_OUTPUT));
+
+                Intent intent = new Intent(this, EnterDetailsActivity.class);
+                intent.putExtra("PHOTO_URI", fileUri);
+                startActivity(intent);
+
                 // Doesn't work
-                list.refreshDrawableState();
+//                list.refreshDrawableState();
                 // Does work
                 wineList.notifyDataSetChanged();
 

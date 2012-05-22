@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:paddingLeft="10dp"
+              android:paddingRight="10dp"
+        >
+
+    <ImageView android:id="@+id/form_icon"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:maxHeight="200dp"
+              android:maxWidth="200dp"
+              android:layout_marginRight="6dip"
+              android:src="@drawable/ic_launcher"
+              android:contentDescription="A picture"/>
+
+
+    <TextView android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="Name"
+            />
+
+    <EditText android:id="@+id/form_name"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:text=""
+              android:background="#a0a0a0"
+              android:padding="5dp"
+              android:inputType="text"
+            />
+
+    <TextView android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="Description"
+              android:paddingTop="5dp"
+            />
+
+    <EditText android:id="@+id/form_description"
+              android:layout_width="fill_parent"
+              android:layout_height="150dp"
+              android:text=""
+              android:background="#a0a0a0"
+              android:inputType="textMultiLine"
+            />
+
+    <RatingBar
+            android:id="@+id/form_rating"
+            android:isIndicator="false"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:numStars="5"
+            android:stepSize="1.0"
+            android:gravity="center_horizontal"
+            />
+
+    <Button android:id="@+id/form_saveFormButton"
+            android:layout_width="fill_parent" android:layout_height="50dp"
+            android:text="Save details"
+            />
+
+</LinearLayout>
+
