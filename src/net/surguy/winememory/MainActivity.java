@@ -25,6 +25,8 @@ public class MainActivity extends Activity {
     WineListAdapter wineList;
 
     Uri fileUri = null;
+    DatabaseHandler db;
+
 
     /**
      * Called when the activity is first created.
@@ -33,6 +35,8 @@ public class MainActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
+        db = new DatabaseHandler(this);
 
         Button photoButton = (Button) findViewById(R.id.photoButton);
 
