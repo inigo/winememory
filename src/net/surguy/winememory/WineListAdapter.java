@@ -1,17 +1,12 @@
 package net.surguy.winememory;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 /**
  * @author Inigo Surguy
@@ -62,7 +57,7 @@ public class WineListAdapter extends BaseAdapter {
         final File file = new File(bottle.getFilePath());
         textLine.setText(bottle.getName());
         iconLine.setAdjustViewBounds(true);
-        iconLine.setImageBitmap(bitmapFromFile(file));
+        iconLine.setImageBitmap(Utils.bitmapFromFile(file, 200));
         iconLine.setMaxHeight(200);
         iconLine.setMaxWidth(200);
         iconLine.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -77,19 +72,6 @@ public class WineListAdapter extends BaseAdapter {
         Line holder = new Line(textLine, iconLine, ratingBar, file);
         view.setTag(holder);
         return view;
-    }
-
-    private Bitmap bitmapFromFile(File file) {
-        try {
-            FileInputStream inputStream = new FileInputStream(file);
-            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-            inputStream.close();
-            return bitmap;
-        } catch (FileNotFoundException e) {
-            throw new IllegalStateException("File was unexpectedly deleted : " + file + " with " + e, e);
-        } catch (IOException e) {
-            throw new IllegalStateException("Could not close input stream : " + file + " with " + e, e);
-        }
     }
 
     private static class Line {

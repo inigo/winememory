@@ -2,8 +2,6 @@ package net.surguy.winememory;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,9 +12,6 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 /**
  * Enter wine details into a form.
@@ -40,7 +35,7 @@ public class EnterDetailsActivity extends Activity {
         final File file = new File(photoUri.getPath());
         ImageView imageView = (ImageView) findViewById(R.id.form_icon);
         imageView.setAdjustViewBounds(true);
-        imageView.setImageBitmap(bitmapFromFile(file));
+        imageView.setImageBitmap(Utils.bitmapFromFile(file, 400));
         imageView.setMaxHeight(400);
         imageView.setMaxWidth(400);
         imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -66,17 +61,5 @@ public class EnterDetailsActivity extends Activity {
         });
     }
 
-    private Bitmap bitmapFromFile(File file) {
-        try {
-            FileInputStream inputStream = new FileInputStream(file);
-            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-            inputStream.close();
-            return bitmap;
-        } catch (FileNotFoundException e) {
-            throw new IllegalStateException("File was unexpectedly deleted : " + file + " with " + e, e);
-        } catch (IOException e) {
-            throw new IllegalStateException("Could not close input stream : " + file + " with " + e, e);
-        }
-    }
 
 }

@@ -46,7 +46,13 @@ public class MainActivity extends Activity {
             public void onClick(View view) {
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 fileUri = getNewFileUri();
+                // It's possible to use android.hardware.Camera.Parameters.setPictureSize to limit the file size that will be created
+                // if you're using the Camera directly - but that doesn't seem possible using the built-in camera app
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
+
+                // Size limit in bytes - but this is documented as applying to video, so probably does nothing for photo
+                intent.putExtra(MediaStore.EXTRA_SIZE_LIMIT, 5120);
+
                 startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
             }
         });
