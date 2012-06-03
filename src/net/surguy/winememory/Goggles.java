@@ -4,17 +4,26 @@ import java.io.*;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 /**
- * http://notanothercodeblog.blogspot.co.uk/2011/02/google-goggles-api.html
- * http://prodroid.com.ua/?p=385
- * <p/>
- * https://github.com/deetch/goggles-experiment/blob/master/parse_dict.py
- * https://developers.google.com/protocol-buffers/docs/javatutorial
- * http://code.google.com/p/protobuf/
+ * Send an image to Google Goggles, and get a response that has recognized text,
+ * logos, etc.
+ * <p>
+ * References:
+ * <ul>
+ *      <li>http://notanothercodeblog.blogspot.co.uk/2011/02/google-goggles-api.html</li>
+ *      <li>http://prodroid.com.ua/?p=385</li>
+ *      <li>https://github.com/deetch/goggles-experiment/blob/master/parse_dict.py</li>
+ *      <li>https://developers.google.com/protocol-buffers/docs/javatutorial</li>
+ *      <li>http://code.google.com/p/protobuf/</li>
+ * </ul>
  *
+ * @author Fadi Hassan
  * @author Poloz Igor
+ * @author Inigo Surguy
  */
 public class Goggles {
 
@@ -40,20 +49,24 @@ public class Goggles {
     }
 
     private String generateCssId() throws IOException {
-        for (int i = 0; i < 3; i++) {
+        int RETRIES = 10;
+        for (int i = 0; i < RETRIES; i++) {
             BigInteger bi = new BigInteger(64, new Random());
             String possibleId = bi.toString(16).toUpperCase();
             if (isValidCssId(possibleId)) {
                 return possibleId;
             }
         }
-        throw new IllegalStateException("Not able to generate valid CSSID after three attempts");
+        throw new IllegalStateException("Not able to generate valid CSSID after " + RETRIES + " attempts");
     }
 
     private boolean isValidCssId(String possibleId) throws IOException {
-        sendRequest(possibleId, cssidPostBody);
-        // @todo Parse response and check is cssid is valid
-        return true;
+        try {
+            sendRequest(possibleId, cssidPostBody);
+            return true;
+        } catch (UnexpectedStatusException e) {
+            return false;
+        }
     }
 
     private String sendPhoto(File file) throws IOException {
@@ -86,6 +99,11 @@ public class Goggles {
         out.write(content);
         out.close();
 
+        boolean isOkay = conn.getHeaderField(0).contains("200");
+        if (!isOkay) {
+            throw new UnexpectedStatusException("Unexpected HTTP status : " + conn.getHeaderField(0));
+        }
+
         BufferedReader buffRead = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         StringBuilder response = new StringBuilder();
         String line;
@@ -96,7 +114,7 @@ public class Goggles {
     }
 
     // Encodes an int32 into varint32.
-    public static byte[] toVarint32(int value) {
+    private byte[] toVarint32(int value) {
         int index = 0;
         int tmp = value;
         while ((0x7F & tmp) != 0) {
@@ -117,7 +135,7 @@ public class Goggles {
         return res;
     }
 
-    private static byte[] getFileBytes(File file) throws IOException {
+    private byte[] getFileBytes(File file) throws IOException {
         byte[] bytes = new byte[(int) file.length()];
         DataInputStream dis = new DataInputStream(new FileInputStream(file));
         int read = 0;
@@ -129,10 +147,28 @@ public class Goggles {
     }
 
     public static void main(String[] args) throws IOException {
-        String imageFile = "tuborg.jpg";
-        Goggles goggles = new Goggles();
-        String response = goggles.sendPhoto(new File(imageFile));
-        System.out.println("response = " + response);
+        List<String> fileNames = Arrays.asList("flavour thesaurus", "free as in freedom", "murakami the elephant vanishes",
+                "smirnoff vodka", "tanqueray london dry gin", "twisty little packages");
+
+        File inputDir = new File("test/resources");
+        File outputDir = new File("test/output");
+        if (!outputDir.exists() && !outputDir.mkdirs()) {
+            throw new FileNotFoundException("Output directory " + outputDir + " doesn't exist and can't be created");
+        }
+
+        for (String fileName : fileNames) {
+            Goggles goggles = new Goggles();
+            String response = goggles.sendPhoto(new File(inputDir, fileName + ".jpg"));
+
+            File output = new File(outputDir, fileName + ".txt");
+            FileOutputStream out = new FileOutputStream(output);
+            out.write(response.getBytes());
+            out.close();
+        }
+    }
+
+    private static class UnexpectedStatusException extends IOException {
+        private UnexpectedStatusException(String detailMessage) { super(detailMessage); }
     }
 
 }
