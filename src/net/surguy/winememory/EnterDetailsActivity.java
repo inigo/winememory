@@ -48,8 +48,14 @@ public class EnterDetailsActivity extends Activity {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
-                String title = getTitle(bm);
-                ((EditText) findViewById(R.id.form_name)).setText(title);
+                final String title = getTitle(bm);
+                Log.i(LOG_TAG, "Got title of " + title);
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        Log.i(LOG_TAG, "Updating title to " + title);
+                        ((EditText) findViewById(R.id.form_name)).setText(title);
+                    }
+                });
                 return null;
             }
         }.execute();
