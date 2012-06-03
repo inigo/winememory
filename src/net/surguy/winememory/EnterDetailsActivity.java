@@ -79,6 +79,9 @@ public class EnterDetailsActivity extends Activity {
 
     private String getTitle(Bitmap bitmap) {
         try {
+
+            // @todo This is wrong - it is posting a bitmap - should be a JPG
+
             ByteBuffer buffer = ByteBuffer.allocate(bitmap.getByteCount());
             bitmap.copyPixelsToBuffer(buffer);
             Goggles goggles = new Goggles();
