@@ -146,6 +146,16 @@ public class Goggles {
         return bytes;
     }
 
+    private String extractText(String response) {
+        String[] strings = response.split("\n");
+        for (String string : strings) {
+            if (string.contains("Text")) {
+                return string.substring(1, string.indexOf("Text")).replaceAll("[^ 0-z]", "");
+            }
+        }
+        return "";
+    }
+
     public static void main(String[] args) throws IOException {
         List<String> fileNames = Arrays.asList("flavour thesaurus", "free as in freedom", "murakami the elephant vanishes",
                 "smirnoff vodka", "tanqueray london dry gin", "twisty little packages");
@@ -159,6 +169,8 @@ public class Goggles {
         for (String fileName : fileNames) {
             Goggles goggles = new Goggles();
             String response = goggles.sendPhoto(new File(inputDir, fileName + ".jpg"));
+            String text = goggles.extractText(response);
+            System.out.println("text = " + text);
 
             File output = new File(outputDir, fileName + ".txt");
             FileOutputStream out = new FileOutputStream(output);
