@@ -2,6 +2,7 @@ package net.surguy.winememory;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.ByteBuffer;
 
 /**
  * Enter wine details into a form.
@@ -35,10 +38,14 @@ public class EnterDetailsActivity extends Activity {
         final File file = new File(photoUri.getPath());
         ImageView imageView = (ImageView) findViewById(R.id.form_icon);
         imageView.setAdjustViewBounds(true);
-        imageView.setImageBitmap(Utils.bitmapFromFile(file, 400));
+        Bitmap bm = Utils.bitmapFromFile(file, 400);
+        imageView.setImageBitmap(bm);
         imageView.setMaxHeight(400);
         imageView.setMaxWidth(400);
         imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+
+        String title = getTitle(bm);
+        ((EditText) findViewById(R.id.form_name)).setText(title);
 
         Button photoButton = (Button) findViewById(R.id.form_saveFormButton);
         photoButton.setOnClickListener(new View.OnClickListener() {
@@ -50,16 +57,23 @@ public class EnterDetailsActivity extends Activity {
                 final Bottle newBottle = new Bottle(title, description, rating, photoUri.getPath());
                 final DatabaseHandler db = new DatabaseHandler(context);
 
-//                runOnUiThread(new Runnable() {
-//                    public void run() {
-                        db.addBottle(newBottle);
-//                    }
-//                });
+                db.addBottle(newBottle);
 
                 context.finish();
             }
         });
     }
 
+    private String getTitle(Bitmap bitmap) {
+        try {
+            ByteBuffer buffer = ByteBuffer.allocate(bitmap.getByteCount());
+            bitmap.copyPixelsToBuffer(buffer);
+            Goggles goggles = new Goggles();
+            String response = goggles.sendPhoto(buffer.array());
+            return goggles.extractText(response);
+        } catch (IOException e) {
+            return "";
+        }
+    }
 
 }

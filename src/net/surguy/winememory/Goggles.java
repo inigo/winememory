@@ -69,8 +69,8 @@ public class Goggles {
         }
     }
 
-    private String sendPhoto(File file) throws IOException {
-        int fileLength = (int) file.length();
+    public String sendPhoto(byte[] photoBytes) throws IOException {
+        int fileLength = photoBytes.length;
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         int newLine = 10;
         out.write(newLine);
@@ -81,10 +81,15 @@ public class Goggles {
         out.write(toVarint32(fileLength + 10));
         out.write(newLine);
         out.write(toVarint32(fileLength));
-        out.write(getFileBytes(file));
+        out.write(photoBytes);
         out.write(trailingBytes);
         out.close();
         return sendRequest(cssId, out.toByteArray());
+    }
+
+    public String sendPhoto(File file) throws IOException {
+        byte[] photoBytes = getFileBytes(file);
+        return sendPhoto(photoBytes);
     }
 
     private String sendRequest(String cssId, byte[] content) throws IOException {
@@ -146,7 +151,7 @@ public class Goggles {
         return bytes;
     }
 
-    private String extractText(String response) {
+    public String extractText(String response) {
         String[] strings = response.split("\n");
         for (String string : strings) {
             if (string.contains("Text")) {
