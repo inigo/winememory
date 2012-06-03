@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -38,14 +39,20 @@ public class EnterDetailsActivity extends Activity {
         final File file = new File(photoUri.getPath());
         ImageView imageView = (ImageView) findViewById(R.id.form_icon);
         imageView.setAdjustViewBounds(true);
-        Bitmap bm = Utils.bitmapFromFile(file, 400);
+        final Bitmap bm = Utils.bitmapFromFile(file, 400);
         imageView.setImageBitmap(bm);
         imageView.setMaxHeight(400);
         imageView.setMaxWidth(400);
         imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
 
-        String title = getTitle(bm);
-        ((EditText) findViewById(R.id.form_name)).setText(title);
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                String title = getTitle(bm);
+                ((EditText) findViewById(R.id.form_name)).setText(title);
+                return null;
+            }
+        }.execute();
 
         Button photoButton = (Button) findViewById(R.id.form_saveFormButton);
         photoButton.setOnClickListener(new View.OnClickListener() {
