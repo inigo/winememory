@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -79,15 +80,13 @@ public class EnterDetailsActivity extends Activity {
 
     private String getTitle(Bitmap bitmap) {
         try {
-
-            // @todo This is wrong - it is posting a bitmap - should be a JPG
-
-            ByteBuffer buffer = ByteBuffer.allocate(bitmap.getByteCount());
-            bitmap.copyPixelsToBuffer(buffer);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
             Goggles goggles = new Goggles();
-            String response = goggles.sendPhoto(buffer.array());
+            String response = goggles.sendPhoto(out.toByteArray());
             return goggles.extractText(response);
         } catch (IOException e) {
+            Log.i(LOG_TAG, "Error retrieving parsed text " + e, e);
             return "";
         }
     }
