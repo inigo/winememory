@@ -1,11 +1,14 @@
 package net.surguy.winememory;
 
+import android.util.Log;
+
 import java.io.*;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -26,6 +29,8 @@ import java.util.Random;
  * @author Inigo Surguy
  */
 public class Goggles {
+
+    private static final String LOG_TAG = "Goggles";
 
     // The POST body required to validate the CSSID.
     private static final byte[] cssidPostBody = new byte[]{0x22,
@@ -50,23 +55,18 @@ public class Goggles {
 
     private String generateCssId() throws IOException {
         int RETRIES = 10;
+        Exception lastException = null;
         for (int i = 0; i < RETRIES; i++) {
             BigInteger bi = new BigInteger(64, new Random());
             String possibleId = bi.toString(16).toUpperCase();
-            if (isValidCssId(possibleId)) {
+            try {
+                sendRequest(possibleId, cssidPostBody);
                 return possibleId;
+            } catch (UnexpectedStatusException e) {
+                lastException = e;
             }
         }
-        throw new IllegalStateException("Not able to generate valid CSSID after " + RETRIES + " attempts");
-    }
-
-    private boolean isValidCssId(String possibleId) throws IOException {
-        try {
-            sendRequest(possibleId, cssidPostBody);
-            return true;
-        } catch (UnexpectedStatusException e) {
-            return false;
-        }
+        throw new IOException("Not able to generate valid CSSID after " + RETRIES + " attempts : "+lastException, lastException);
     }
 
     public String sendPhoto(byte[] photoBytes) throws IOException {
@@ -104,10 +104,15 @@ public class Goggles {
         out.write(content);
         out.close();
 
-        boolean isOkay = conn.getHeaderField(0).contains("200");
-        if (!isOkay) {
-            throw new UnexpectedStatusException("Unexpected HTTP status : " + conn.getHeaderField(0));
+        // Not getting the header fields I expect on Android
+        Map<String,List<String>> headerFields = conn.getHeaderFields();
+        for (String s : headerFields.keySet()) {
+            Log.d(LOG_TAG, "Header " + s + " with value " + headerFields.get(s));
         }
+//        boolean isOkay = conn.getHeaderField("null").contains("200");
+//        if (!isOkay) {
+//            throw new UnexpectedStatusException("Unexpected HTTP status : " + conn.getHeaderField(0));
+//        }
 
         BufferedReader buffRead = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         StringBuilder response = new StringBuilder();
