@@ -1,5 +1,9 @@
 package net.surguy.winememory;
 
+import android.graphics.Bitmap;
+
+import java.io.File;
+
 /**
  * A record for a single bottle, suitable to be stored in the database.
  *
@@ -15,8 +19,7 @@ public class Bottle {
     private float rating;
     private String filePath;
 
-    public Bottle() {
-    }
+    public Bottle() { }
 
     public Bottle(String name, String description, float rating, String filePath) {
         this.name = name;
@@ -33,43 +36,27 @@ public class Bottle {
         this.filePath = filePath;
     }
 
-    public String getName() {
-        return name;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
-    public String getDescription() {
-        return description;
-    }
+    public float getRating() { return rating; }
+    public void setRating(float rating) { this.rating = rating; }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    public String getFilePath() { return filePath; }
+    public void setFilePath(String filePath) { this.filePath = filePath; }
 
-    public float getRating() {
-        return rating;
-    }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
 
-    public void setRating(float rating) {
-        this.rating = rating;
-    }
-
-    public String getFilePath() {
-        return filePath;
-    }
-
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+    private Bitmap bitmap;
+    public synchronized Bitmap getIcon() {
+        if (bitmap==null) {
+            final File file = new File(getFilePath());
+            bitmap = Utils.bitmapFromFile(file, 200);
+        }
+        return bitmap;
     }
 }
