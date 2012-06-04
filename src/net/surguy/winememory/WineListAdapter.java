@@ -79,6 +79,7 @@ public class WineListAdapter extends BaseAdapter {
         if (! cache.containsKey(position)) {
             final Bottle bottle = db.getBottle(position);
             Log.d(LOG_TAG, "Bottle is " + bottle.getId() + " with text " + bottle.getName());
+            bottle.getIcon();
             cache.put(position, bottle);
         }
         Log.d(LOG_TAG, "Retrieving bottle from cache at " + position);
