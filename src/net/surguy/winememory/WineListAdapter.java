@@ -7,8 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Inigo Surguy
@@ -20,13 +20,27 @@ public class WineListAdapter extends BaseAdapter {
     private final Context context;
     private final DatabaseHandler db;
 
-    private final Map<Integer, Bottle> cache = new HashMap<Integer, Bottle>();
+    private final Map<Integer, Bottle> cache = new ConcurrentHashMap<Integer, Bottle>();
 
     public WineListAdapter(Context context) {
         Log.d(LOG_TAG, "Creating WineListAdapter");
         this.context = context;
         this.inflater = LayoutInflater.from(context);
         db = new DatabaseHandler(context);
+        cacheItemsInBackground();
+    }
+
+    private void cacheItemsInBackground() {
+        new Thread(new Runnable() {
+            public void run() {
+                // Delay slightly to be less likely to conflict with the listview code itself retrieving items
+                try { Thread.sleep(200); } catch (InterruptedException ignore) { }
+                for (int i=0; i<getCount(); i++) {
+                    Log.d(LOG_TAG, "Background caching item " + i);
+                    getBottle(i);
+                }
+            }
+        }).start();
     }
 
     public int getCount() {
