@@ -3,6 +3,7 @@ package net.surguy.winememory;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -71,6 +72,15 @@ public class DatabaseHandler extends SQLiteOpenHelper  {
         }
     }
 
+    public int countBottles() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        try {
+            return (int) DatabaseUtils.queryNumEntries(db, TABLE_BOTTLE);
+        } finally {
+            db.close();
+        }
+    }
+
     public List<Bottle> getAllBottles() {
         List<Bottle> bottleList = new ArrayList<Bottle>();
 
@@ -118,7 +128,7 @@ public class DatabaseHandler extends SQLiteOpenHelper  {
 
         try {
             Cursor cursor = db.query(TABLE_BOTTLE, new String[] { KEY_ID, KEY_NAME, KEY_DESCRIPTION, KEY_RATING, KEY_FILEPATH },
-                    KEY_ID + "=?", new String[]{ ""+id }, null, null, null, null);
+                    KEY_ID + "=?", new String[]{ ""+(id+1) }, null, null, null, null);
             if (cursor != null) {
                 cursor.moveToFirst();
             } else {

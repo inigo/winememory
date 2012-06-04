@@ -97,26 +97,13 @@ public class MainActivity extends Activity {
 
                 Log.i(LOG_TAG, "Activity has completed and returned control");
 
-                // @todo SimpleCursorAdapter???
+                wineList.notifyDataSetChanged();
 //                Doesn't work
                 list.refreshDrawableState();
                 list.invalidateViews();
                 list.requestLayout();
 
-                // @todo What thread am I on currently?
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                        Log.i(LOG_TAG, "Updating things on UI thread");
-                        list.refreshDrawableState();
-                        list.invalidateViews();
-                        wineList.notifyDataSetChanged();
-                    }
-                });
-
-                Log.i(LOG_TAG, "Notifying on current thread");
-                wineList.notifyDataSetChanged();
-
-                // @todo Massively hacky! Kills and recreates the activity
+//                // @todo Massively hacky! Kills and recreates the activity
                 this.recreate();
 
             } else if (resultCode == RESULT_CANCELED) {

@@ -100,6 +100,7 @@ public class EnterDetailsActivity extends Activity {
         }
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     private void writeDebuggingFile(ByteArrayOutputStream out) throws IOException {
         File directory = new File(Environment.getExternalStorageDirectory().getName() + File.separatorChar + "Android/data/" +
             EnterDetailsActivity.this.getPackageName() + "/files/");

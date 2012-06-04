@@ -1,6 +1,7 @@
 package net.surguy.winememory;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,34 +13,44 @@ import java.io.File;
  * @author Inigo Surguy
  */
 public class WineListAdapter extends BaseAdapter {
+    private static final String LOG_TAG = "WineListAdapter";
+
     private final LayoutInflater inflater;
     private final Context context;
     private final DatabaseHandler db;
 
     public WineListAdapter(Context context) {
+        Log.d(LOG_TAG, "Creating WineListAdapter");
         this.context = context;
         this.inflater = LayoutInflater.from(context);
         db = new DatabaseHandler(context);
     }
 
     public int getCount() {
-        // @todo Switch to a count method, to be more efficient
-        return db.getAllBottles().size();
+        Log.d(LOG_TAG, "Getting count of bottles");
+        return db.countBottles();
     }
     public Object getItem(int i) {
-        // @todo Efficiency!
-        return db.getAllBottles().get(i);
+        Log.d(LOG_TAG, "Getting item " + i + " via getItem");
+        return db.getBottle(i);
     }
 
     public long getItemId(int i) { return 0; }
 
     public View getView(int position, View view, ViewGroup viewGroup) {
-        View currentView = (view == null) ? createView(position) : view;
-        Line holder = (Line) currentView.getTag();
-
-//        holder.textLine.setText("Item " + holder.file.getName());
-
+        Log.d(LOG_TAG, "Getting view for " + position + " - view is " + view);
+        View currentView = createView(position);
         return currentView;
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        super.notifyDataSetChanged();
+    }
+
+    @Override
+    public void notifyDataSetInvalidated() {
+        super.notifyDataSetInvalidated();
     }
 
     private View createView(final int position) {
@@ -48,11 +59,12 @@ public class WineListAdapter extends BaseAdapter {
 
         View view = inflater.inflate(R.layout.wine_list, null);
         TextView textLine = (TextView) view.findViewById(R.id.description);
-//        TextView titleLine = (TextView) view.findViewById(R.id.title);
         ImageView iconLine = (ImageView) view.findViewById(R.id.icon);
         RatingBar ratingBar = (RatingBar) view.findViewById(R.id.rating);
 
-        final Bottle bottle = db.getAllBottles().get(position);
+        Log.d(LOG_TAG, "Retrieving bottle at " + position + " for createView");
+        final Bottle bottle = db.getBottle(position);
+        Log.d(LOG_TAG, "Bottle is " + bottle.getId() + " with text " + bottle.getName());
 
         final File file = new File(bottle.getFilePath());
         textLine.setText(bottle.getName());
