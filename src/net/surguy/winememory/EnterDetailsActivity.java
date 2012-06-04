@@ -72,8 +72,10 @@ public class EnterDetailsActivity extends Activity {
 
                 final Bottle newBottle = new Bottle(title, description, rating, photoUri.getPath());
                 final DatabaseHandler db = new DatabaseHandler(context);
-
+                Log.i(LOG_TAG, "About to create bottle - count is " + db.countBottles());
                 db.addBottle(newBottle);
+                Log.i(LOG_TAG, "Just created bottle - count is " + db.countBottles());
+                db.close();
 
                 context.finish();
             }

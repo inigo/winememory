@@ -30,8 +30,9 @@ public class WineListAdapter extends BaseAdapter {
     }
 
     public int getCount() {
-        Log.d(LOG_TAG, "Getting count of bottles");
-        return db.countBottles();
+        int count = db.countBottles();
+        Log.d(LOG_TAG, "Getting count of bottles : "+count);
+        return count;
     }
     public Object getItem(int position) {
         Log.d(LOG_TAG, "Getting item " + position + " via getItem");
