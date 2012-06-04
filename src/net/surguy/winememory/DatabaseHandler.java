@@ -84,7 +84,7 @@ public class DatabaseHandler extends SQLiteOpenHelper  {
     public List<Bottle> getAllBottles() {
         List<Bottle> bottleList = new ArrayList<Bottle>();
 
-        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = this.getReadableDatabase();
         try {
             Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_BOTTLE, null);
 
