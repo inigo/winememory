@@ -83,29 +83,31 @@ public class EnterDetailsActivity extends Activity {
     private String getTitle(File file) {
         try {
             // Google Goggles fails if the image sent to it is too small! A 400px image doesn't work. A 600px image does.
-            // However, sending files that have too large a file size (not sure of the limit, but original sized photos) also fail
+            // However, sending files that have too large a file size (not sure of the limit, but original sized photos) also fails
             final Bitmap bitmap = Utils.bitmapFromFile(file, 600);
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             boolean success = bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
             if (!success) { Log.i(LOG_TAG, "Could not successfully compress bitmap"); }
-
-            File directory = new File(Environment.getExternalStorageDirectory().getName() + File.separatorChar + "Android/data/" +
-                    EnterDetailsActivity.this.getPackageName() + "/files/");
-
-            File f = new File(directory, "compressed.jpg");
-            FileOutputStream fileOutputStream = new FileOutputStream(f);
-            fileOutputStream.write(out.toByteArray());
-            fileOutputStream.close();
-            Log.i(LOG_TAG, "Written JPEG to " + f.getAbsolutePath());
+            // writeDebuggingFile(out);
 
             Goggles goggles = new Goggles();
-            String response = goggles.sendPhoto(f);
+            String response = goggles.sendPhoto(out.toByteArray());
             return goggles.extractText(response);
         } catch (IOException e) {
             Log.i(LOG_TAG, "Error retrieving parsed text " + e, e);
             return "";
         }
+    }
+
+    private void writeDebuggingFile(ByteArrayOutputStream out) throws IOException {
+        File directory = new File(Environment.getExternalStorageDirectory().getName() + File.separatorChar + "Android/data/" +
+            EnterDetailsActivity.this.getPackageName() + "/files/");
+        File f = new File(directory, "compressed.jpg");
+        FileOutputStream fileOutputStream = new FileOutputStream(f);
+        fileOutputStream.write(out.toByteArray());
+        fileOutputStream.close();
+        Log.i(LOG_TAG, "Written JPEG to " + f.getAbsolutePath());
     }
 
 }
