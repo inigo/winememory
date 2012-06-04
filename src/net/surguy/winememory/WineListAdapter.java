@@ -50,7 +50,7 @@ public class WineListAdapter extends BaseAdapter {
     }
     public Object getItem(int position) {
         Log.d(LOG_TAG, "Getting item " + position + " via getItem");
-        return db.getBottle(position);
+        return db.getAllBottles().get(position);
     }
 
     public long getItemId(int position) {
@@ -77,7 +77,7 @@ public class WineListAdapter extends BaseAdapter {
 
     private Bottle getBottle(int position) {
         if (! cache.containsKey(position)) {
-            final Bottle bottle = db.getBottle(position);
+            final Bottle bottle = db.getAllBottles().get(position);
             Log.d(LOG_TAG, "Bottle is " + bottle.getId() + " with text " + bottle.getName());
             bottle.getIcon();
             cache.put(position, bottle);
@@ -109,6 +109,16 @@ public class WineListAdapter extends BaseAdapter {
             public void onClick(View v) {
                 String description = ((Bottle) v.getTag()).getDescription();
                 Toast.makeText(context, description, Toast.LENGTH_SHORT).show();
+            }
+        });
+        view.setOnLongClickListener(new View.OnLongClickListener() {
+            public boolean onLongClick(View v) {
+                Bottle bottle = (Bottle) v.getTag();
+                db.deleteBottle(bottle);
+                cache.clear();
+                notifyDataSetChanged();
+                cacheItemsInBackground();
+                return true;
             }
         });
         return view;

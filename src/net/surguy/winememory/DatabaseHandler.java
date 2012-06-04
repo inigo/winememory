@@ -56,7 +56,7 @@ public class DatabaseHandler extends SQLiteOpenHelper  {
         onCreate(db);
     }
 
-    public void addBottle(Bottle bottle) {
+    public synchronized void addBottle(Bottle bottle) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         try {
@@ -72,7 +72,7 @@ public class DatabaseHandler extends SQLiteOpenHelper  {
         }
     }
 
-    public int countBottles() {
+    public synchronized int countBottles() {
         SQLiteDatabase db = this.getReadableDatabase();
         try {
             return (int) DatabaseUtils.queryNumEntries(db, TABLE_BOTTLE);
@@ -81,7 +81,7 @@ public class DatabaseHandler extends SQLiteOpenHelper  {
         }
     }
 
-    public List<Bottle> getAllBottles() {
+    public synchronized List<Bottle> getAllBottles() {
         List<Bottle> bottleList = new ArrayList<Bottle>();
 
         SQLiteDatabase db = this.getReadableDatabase();
@@ -107,7 +107,7 @@ public class DatabaseHandler extends SQLiteOpenHelper  {
         return bottleList;
     }
 
-    public int updateBottle(Bottle bottle) {
+    public synchronized int updateBottle(Bottle bottle) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         try {
@@ -123,7 +123,7 @@ public class DatabaseHandler extends SQLiteOpenHelper  {
         }
     }
 
-    public Bottle getBottle(int id) {
+    public synchronized Bottle getBottle(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
 
         try {
@@ -141,7 +141,7 @@ public class DatabaseHandler extends SQLiteOpenHelper  {
         }
     }
 
-    public void deleteBottle(Bottle bottle) {
+    public synchronized void deleteBottle(Bottle bottle) {
         SQLiteDatabase db = this.getWritableDatabase();
         try {
             db.delete(TABLE_BOTTLE, KEY_ID + " = ?", new String[]{"" + bottle.getId()});
