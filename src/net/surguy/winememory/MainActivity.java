@@ -20,13 +20,12 @@ import java.util.Date;
 public class MainActivity extends Activity {
 
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
+    private static final int CREATE_BOTTLE_REQUEST_CODE = 200;
     private static final String LOG_TAG = "MainActivity";
 
     ListView list;
     WineListAdapter wineList;
-
     Uri fileUri = null;
-
 
     /**
      * Called when the activity is first created.
@@ -89,41 +88,17 @@ public class MainActivity extends Activity {
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Log.d(LOG_TAG, "Intent is " + data);
-//                Log.d(LOG_TAG, "Extra URI is " + data.getExtras().get(MediaStore.EXTRA_OUTPUT));
-
                 Intent intent = new Intent(this, EnterDetailsActivity.class);
                 intent.putExtra("PHOTO_URI", fileUri);
-                startActivity(intent);
-
-                Log.i(LOG_TAG, "Activity has completed and returned control");
-
-                // @todo SimpleCursorAdapter???
-//                Doesn't work
-                list.refreshDrawableState();
-                list.invalidateViews();
-                list.requestLayout();
-
-                // @todo What thread am I on currently?
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                        Log.i(LOG_TAG, "Updating things on UI thread");
-                        list.refreshDrawableState();
-                        list.invalidateViews();
-                        wineList.notifyDataSetChanged();
-                    }
-                });
-
-                Log.i(LOG_TAG, "Notifying on current thread");
-                wineList.notifyDataSetChanged();
-
-                // @todo Massively hacky! Kills and recreates the activity
-                this.recreate();
-
+                startActivityForResult(intent, CREATE_BOTTLE_REQUEST_CODE);
             } else if (resultCode == RESULT_CANCELED) {
                 Log.d(LOG_TAG, "Capture cancelled");
             } else {
                 Toast.makeText(this, "Photo capture failed", Toast.LENGTH_LONG).show();
             }
+        } else if (requestCode == CREATE_BOTTLE_REQUEST_CODE) {
+            Log.i(LOG_TAG, "Bottle creation activity has returned");
+            wineList.notifyDataSetChanged();
         }
     }
 

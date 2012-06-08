@@ -3,6 +3,7 @@ package net.surguy.winememory;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -55,7 +56,7 @@ public class DatabaseHandler extends SQLiteOpenHelper  {
         onCreate(db);
     }
 
-    public void addBottle(Bottle bottle) {
+    public synchronized void addBottle(Bottle bottle) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         try {
@@ -71,10 +72,19 @@ public class DatabaseHandler extends SQLiteOpenHelper  {
         }
     }
 
-    public List<Bottle> getAllBottles() {
+    public synchronized int countBottles() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        try {
+            return (int) DatabaseUtils.queryNumEntries(db, TABLE_BOTTLE);
+        } finally {
+            db.close();
+        }
+    }
+
+    public synchronized List<Bottle> getAllBottles() {
         List<Bottle> bottleList = new ArrayList<Bottle>();
 
-        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = this.getReadableDatabase();
         try {
             Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_BOTTLE, null);
 
@@ -97,7 +107,7 @@ public class DatabaseHandler extends SQLiteOpenHelper  {
         return bottleList;
     }
 
-    public int updateBottle(Bottle bottle) {
+    public synchronized int updateBottle(Bottle bottle) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         try {
@@ -113,12 +123,12 @@ public class DatabaseHandler extends SQLiteOpenHelper  {
         }
     }
 
-    public Bottle getBottle(int id) {
+    public synchronized Bottle getBottle(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
 
         try {
             Cursor cursor = db.query(TABLE_BOTTLE, new String[] { KEY_ID, KEY_NAME, KEY_DESCRIPTION, KEY_RATING, KEY_FILEPATH },
-                    KEY_ID + "=?", new String[]{ ""+id }, null, null, null, null);
+                    KEY_ID + "=?", new String[]{ ""+(id+1) }, null, null, null, null);
             if (cursor != null) {
                 cursor.moveToFirst();
             } else {
@@ -131,7 +141,7 @@ public class DatabaseHandler extends SQLiteOpenHelper  {
         }
     }
 
-    public void deleteBottle(Bottle bottle) {
+    public synchronized void deleteBottle(Bottle bottle) {
         SQLiteDatabase db = this.getWritableDatabase();
         try {
             db.delete(TABLE_BOTTLE, KEY_ID + " = ?", new String[]{"" + bottle.getId()});

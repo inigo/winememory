@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -15,8 +16,8 @@ import android.widget.RatingBar;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 /**
  * Enter wine details into a form.
@@ -46,10 +47,11 @@ public class EnterDetailsActivity extends Activity {
         imageView.setMaxWidth(400);
         imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
 
+        //noinspection unchecked
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
-                final String title = getTitle(bm);
+                final String title = getTitle(file);
                 Log.i(LOG_TAG, "Got title of " + title);
                 runOnUiThread(new Runnable() {
                     public void run() {
@@ -70,18 +72,27 @@ public class EnterDetailsActivity extends Activity {
 
                 final Bottle newBottle = new Bottle(title, description, rating, photoUri.getPath());
                 final DatabaseHandler db = new DatabaseHandler(context);
-
+                Log.i(LOG_TAG, "About to create bottle - count is " + db.countBottles());
                 db.addBottle(newBottle);
+                Log.i(LOG_TAG, "Just created bottle - count is " + db.countBottles());
+                db.close();
 
                 context.finish();
             }
         });
     }
 
-    private String getTitle(Bitmap bitmap) {
+    private String getTitle(File file) {
         try {
+            // Google Goggles fails if the image sent to it is too small! A 400px image doesn't work. A 600px image does.
+            // However, sending files that have too large a file size (not sure of the limit, but original sized photos) also fails
+            final Bitmap bitmap = Utils.bitmapFromFile(file, 600);
+
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
+            boolean success = bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+            if (!success) { Log.i(LOG_TAG, "Could not successfully compress bitmap"); }
+            // writeDebuggingFile(out);
+
             Goggles goggles = new Goggles();
             String response = goggles.sendPhoto(out.toByteArray());
             return goggles.extractText(response);
@@ -89,6 +100,17 @@ public class EnterDetailsActivity extends Activity {
             Log.i(LOG_TAG, "Error retrieving parsed text " + e, e);
             return "";
         }
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    private void writeDebuggingFile(ByteArrayOutputStream out) throws IOException {
+        File directory = new File(Environment.getExternalStorageDirectory().getName() + File.separatorChar + "Android/data/" +
+            EnterDetailsActivity.this.getPackageName() + "/files/");
+        File f = new File(directory, "compressed.jpg");
+        FileOutputStream fileOutputStream = new FileOutputStream(f);
+        fileOutputStream.write(out.toByteArray());
+        fileOutputStream.close();
+        Log.i(LOG_TAG, "Written JPEG to " + f.getAbsolutePath());
     }
 
 }

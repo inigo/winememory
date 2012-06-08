@@ -1,7 +1,5 @@
 package net.surguy.winememory;
 
-import android.util.Log;
-
 import java.io.*;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
@@ -107,7 +105,7 @@ public class Goggles {
         // Not getting the header fields I expect on Android
         Map<String,List<String>> headerFields = conn.getHeaderFields();
         for (String s : headerFields.keySet()) {
-            Log.d(LOG_TAG, "Header " + s + " with value " + headerFields.get(s));
+//            Log.d(LOG_TAG, "Header " + s + " with value " + headerFields.get(s));
         }
 //        boolean isOkay = conn.getHeaderField("null").contains("200");
 //        if (!isOkay) {
@@ -178,14 +176,18 @@ public class Goggles {
 
         for (String fileName : fileNames) {
             Goggles goggles = new Goggles();
-            String response = goggles.sendPhoto(new File(inputDir, fileName + ".jpg"));
-            String text = goggles.extractText(response);
-            System.out.println("text = " + text);
+            try {
+                String response = goggles.sendPhoto(new File(inputDir, fileName + ".jpg"));
+                String text = goggles.extractText(response);
+                System.out.println("Succeeded for "+fileName + " with text: "+ text);
 
-            File output = new File(outputDir, fileName + ".txt");
-            FileOutputStream out = new FileOutputStream(output);
-            out.write(response.getBytes());
-            out.close();
+                File output = new File(outputDir, fileName + ".txt");
+                FileOutputStream out = new FileOutputStream(output);
+                out.write(response.getBytes());
+                out.close();
+            } catch (IOException e) {
+                System.out.println("Failed for " + fileName);
+            }
         }
     }
 
